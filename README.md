@@ -1,88 +1,60 @@
-# Real-time Chat Application
-Develop a chat app using WebSocket technology to enable real-time
-communication.
-  # Create a new directory for your project
-    mkdir chat-app
+class ToDoList:
+    def __init__(self):
+        self.tasks = []
 
-# Navigate into the project directory
-    cd chat-app
+    def add_task(self, task):
+        self.tasks.append({'task': task, 'completed': False})
+        print(f"Added task: {task}")
 
-# Initialize a new Node.js project with default settings
-    npm init -y
+    def mark_completed(self, task_number):
+        if 0 <= task_number < len(self.tasks):
+            self.tasks[task_number]['completed'] = True
+            print(f"Marked task {task_number} as completed.")
+        else:
+            print("Invalid task number.")
 
-# Install the required dependencies
-    npm install ws express
+    def remove_completed_tasks(self):
+        self.tasks = [task for task in self.tasks if not task['completed']]
+        print("Removed all completed tasks.")
 
-    const express = require('express');
-    const WebSocket = require('ws');
+    def view_tasks(self):
+        if not self.tasks:
+            print("No tasks available.")
+        else:
+            for i, task in enumerate(self.tasks):
+                status = "Completed" if task['completed'] else "Not Completed"
+                print(f"{i}: {task['task']} - {status}")
 
-    const app = express();
-    const port = 3000;
 
-    // Serve static files from the public directory
-    app.use(express.static('public'));
+def main():
+    todo_list = ToDoList()
 
-    const server = app.listen(port, () => {
-      console.log(`Server is listening on http://localhost:${port}`);
-    });
+    while True:
+        print("\nTo-Do List Application")
+        print("1. Add Task")
+        print("2. Mark Task as Completed")
+        print("3. Remove Completed Tasks")
+        print("4. View Tasks")
+        print("5. Exit")
 
-    const wss = new WebSocket.Server({ server });
+        choice = input("Enter your choice: ")
 
-    wss.on('connection', (ws) => {
-      console.log('New client connected');
+        if choice == '1':
+            task = input("Enter the task: ")
+            todo_list.add_task(task)
+        elif choice == '2':
+            task_number = int(input("Enter the task number to mark as completed: "))
+            todo_list.mark_completed(task_number)
+        elif choice == '3':
+            todo_list.remove_completed_tasks()
+        elif choice == '4':
+            todo_list.view_tasks()
+        elif choice == '5':
+            print("Exiting the application.")
+            break
+        else:
+            print("Invalid choice. Please try again.")
 
-      ws.on('message', (message) => {
-        console.log(`Received: ${message}`);
-        // Broadcast the message to all clients
-        wss.clients.forEach((client) => {
-          if (client !== ws && client.readyState === WebSocket.OPEN) {
-            client.send(message);
-          }
-        });
-      });
 
-      ws.on('close', () => {
-        console.log('Client disconnected');
-       });
-    });
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Real-time Chat App</title>
-    <style>
-        body { font-family: Arial, sans-serif; }
-        #chat { margin-bottom: 20px; }
-        #messages { border: 1px solid #ccc; height: 300px; overflow-y: scroll; padding: 10px; }
-        #input { width: calc(100% - 22px); }
-    </style>
-    </head>
-    <body>
-    <div id="chat">
-        <div id="messages"></div>
-        <input type="text" id="input" placeholder="Type a message..." autofocus>
-    </div>
-    <script>
-        const ws = new WebSocket(`ws://${location.host}`);
-
-        ws.onmessage = (event) => {
-            const messages = document.getElementById('messages');
-            const message = document.createElement('div');
-            message.textContent = event.data;
-            messages.appendChild(message);
-            messages.scrollTop = messages.scrollHeight;
-        };
-
-        document.getElementById('input').addEventListener('keypress', (event) => {
-            if (event.key === 'Enter') {
-                const input = document.getElementById('input');
-                const message = input.value;
-                ws.send(message);
-                input.value = '';
-            }
-        });
-    </script>
-    </body>
-    </html>
-    node server.js
+if __name__ == "__main__":
+    main()
